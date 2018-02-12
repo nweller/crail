@@ -43,6 +43,7 @@ public class CoreInputStream extends CoreStream implements CrailInputStream {
 	private long readHint;
 	private CrailImmediateOperation noOp;
 	private boolean open;
+	private boolean unlimitedCapacity;   
 	
 	public CoreInputStream(CoreNode file, long streamId, long readHint) throws Exception {
 		super(file, streamId, 0);
@@ -50,6 +51,7 @@ public class CoreInputStream extends CoreStream implements CrailInputStream {
 		this.readHint = Math.max(0, Math.min(file.getCapacity(), readHint));
 		this.noOp = new CrailImmediateOperation(0);
 		this.open = true;
+		this.unlimitedCapacity = false;
 		if (CrailConstants.DEBUG){
 			LOG.info("CoreInputStream: open, path  " + file.getPath() + ", fd " + file.getFd() + ", streamId " + streamId + ", isDir " + file.getType().isDirectory() + ", readHint " + this.readHint);
 		}
@@ -62,7 +64,7 @@ public class CoreInputStream extends CoreStream implements CrailInputStream {
 		if (dataBuf.remaining() <= 0) {
 			return noOp;
 		}
-		if (position() >= getFile().getCapacity()) {
+		if (!unlimitedCapacity && position() >= getFile().getCapacity()) {
 			return null;
 		}
 		
@@ -126,7 +128,11 @@ public class CoreInputStream extends CoreStream implements CrailInputStream {
 		StorageFuture future = endpoint.read(buffer, block, opDesc.getBlockOffset());
 		return future;
 	}	
-	
+
+	public void setUnlimitedCapacity(boolean value) {
+		unlimitedCapacity = value;
+	}
+
 	void update(long newCapacity) {
 		inFlight.decrementAndGet();
 	}
