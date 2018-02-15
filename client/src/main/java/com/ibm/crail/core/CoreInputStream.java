@@ -87,6 +87,9 @@ public class CoreInputStream extends CoreStream implements CrailInputStream {
 	}
 	
 	final public int available() {
+		if (unlimitedCapacity) {
+			return Integer.MAX_VALUE;
+		}
 		long available = Math.max(0, getFile().getCapacity() - position());
 		long maxint = (long) Integer.MAX_VALUE;
 		if (available < maxint){
