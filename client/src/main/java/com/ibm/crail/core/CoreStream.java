@@ -180,7 +180,11 @@ public abstract class CoreStream {
 			throw new IOException("seek position out of range, pos " + pos + ", fileCapacity " + fileInfo.getCapacity());
 		}
 	}	
-	
+
+	void unlimitedSeek(long pos) throws IOException {
+		this.position = pos;
+	}
+        
 	Future<Void> sync() throws IOException {
 		Future<Void> future = null;
 		if (fileInfo.getToken() > 0 && syncedCapacity < fileInfo.getCapacity()){

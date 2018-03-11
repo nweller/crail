@@ -101,7 +101,11 @@ public class CoreInputStream extends CoreStream implements CrailInputStream {
 	
 	final public void seek(long pos) throws IOException {
 		long oldPos = position();
-		super.seek(pos);
+		if (unlimitedCapacity) {
+			super.unlimitedSeek(pos);
+		} else {
+			super.seek(pos);
+		}
 		long newPos = position();
 		if (oldPos != newPos){
 			this.readHint = 0;
